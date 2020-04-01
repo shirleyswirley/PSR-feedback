@@ -16,8 +16,6 @@ addpath(genpath(utils_path));
 
 %-------------------------------
 % Load all export maps + grid variables
-% (everything on satellite grid since
-% this is how everything was computed)
 %-------------------------------
 
 % - List all npp and e-ratio algorithms
@@ -72,14 +70,7 @@ for inpp = 1:nppn
         m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
         caxis([cmin cmax]); colormap(flipud(cmap)); shading flat;
         cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-        cbticksnow = compose('%d',linspace(cmin,cmax,5))';
-        if cmax<max(max(cexp_mapnow))
-            cbticksnow{end} = ['>' cbticksnow{end}];
-        end
-        if cmin>min(min(cexp_mapnow))
-            cbticksnow{1} = ['<' cbticksnow{1}];
-        end
-        cb.TickLabels = cbticksnow;
+        mapvarnow = cexp_mapnow; extend_cbar_ticklabels; % needs cmin,cmax,mapvarnow,cb 
         m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
         title([npp_algs{inpp} ' NPP+' eratio_algs{ieratio} ' e-ratio_ '],...
             'fontsize',titlefontsize,'fontweight',titlefontwt);
