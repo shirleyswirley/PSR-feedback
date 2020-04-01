@@ -1,31 +1,16 @@
 close all;
 clear all;
-
-%-------------------------------
-% Set up paths
-%-------------------------------
-utils_path = '/graid1/shirlleu/PSRfeedback/utils/';
-data_path = '/graid1/shirlleu/PSRfeedback/data/';
-fig_save_path = '/graid1/shirlleu/PSRfeedback/pdfs_pngs/';
-
-%-------------------------------
-% Set up warnings and utils
-%-------------------------------
-warning('off','all');
-addpath(genpath(utils_path));
+setup_figs;
 
 %-------------------------------
 % Load data + grid variables
 %-------------------------------
-
-% - Load regions map + grid variables
-reg_struct = load([data_path 'PRiSM_regions_2deg.mat'],'M3d','gridd','R2d','regnamesabbrev');
+% - Load grid variables
+reg_struct = load([data_path 'PRiSM_regions_2deg.mat'],'M3d','gridd');
 M3d = reg_struct.M3d;
 gridd = reg_struct.gridd;
 lon2 = gridd.xt;
 lat2 = gridd.yt;
-reg_map = reg_struct.R2d;
-reg_names = reg_struct.regnamesabbrev;
 
 % - Load Kost beta map
 load([data_path 'Kost_beta_2deg.mat'],'beta_clim');
@@ -59,7 +44,6 @@ end
 %-------------------------------
 % Plot figure
 %-------------------------------
-
 % - Define plot params
 seqcmap=cbrewer('seq','YlGnBu',20,'linear');
 mapproj = 'gall-peters';
@@ -70,7 +54,8 @@ titlefontwt = 'bold';
 cbticklen = 0.03;
 
 f=figure;
-set(f,'color','white','units','inches','position',[1 1 8.5 5],'resize','off','paperpositionmode','auto');
+set(f,'color','white','units','inches',...
+    'position',[1 1 8.5 5],'resize','off','paperpositionmode','auto');
 
 % - Kost beta map
 ax = subplot(221);

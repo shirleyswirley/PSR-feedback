@@ -1,23 +1,10 @@
 clear all;
 close all;
-
-%-------------------------------
-% Set up paths
-%-------------------------------
-utils_path = '/graid1/shirlleu/PSRfeedback/utils/';
-data_path = '/graid1/shirlleu/PSRfeedback/data/globalexportmaps_spatvareratioandezdepth/';
-fig_save_path = '/graid1/shirlleu/PSRfeedback/pdfs_pngs/';
-
-%-------------------------------
-% Set up warnings and utils
-%-------------------------------
-warning('off','all');
-addpath(genpath(utils_path));
+setup_figs;
 
 %-------------------------------
 % Load all export maps + grid variables
 %-------------------------------
-
 % - List all npp and e-ratio algorithms
 npp_algs = {'VGPM','VGPME','CbPM'};
 eratio_algs = {'Laws2000','D2005PP','Laws2011D'};
@@ -27,17 +14,17 @@ eratio_algs = {'Laws2000','D2005PP','Laws2011D'};
 eration = length(eratio_algs);
 nppn = length(npp_algs);
 timen = 160; % length of monthly mean export time series
-load([data_path 'expCmo_D2005PPfromCbPM.mat'],'lat1','lon1');
+load([data_path 'globalexportmaps_spatvareratioandezdepth/expCmo_D2005PPfromCbPM.mat'],'lat1','lon1');
 lon1 = [lon1(181:end)' lon1(1:180)'+360];
 cexp_mon_maps = nan(length(lat1),length(lon1),timen,nppn,eration);
 
 % - Load export maps + populate cexp_mon_maps
 for inpp = 1:nppn
     for ieratio = 1:eration
-        load([data_path 'expCmo_' eratio_algs{ieratio} 'from' ...
-            npp_algs{inpp} '.mat'],'expCmo1');
-        disp([data_path 'expCmo_' eratio_algs{ieratio} 'from' ...
-            npp_algs{inpp} '.mat']);
+        load([data_path 'globalexportmaps_spatvareratioandezdepth/expCmo_' ...
+            eratio_algs{ieratio} 'from' npp_algs{inpp} '.mat'],'expCmo1');
+        disp([data_path 'globalexportmaps_spatvareratioandezdepth/expCmo_' ...
+            eratio_algs{ieratio} 'from' npp_algs{inpp} '.mat']);
         cexp_mon_maps(:,:,:,inpp,ieratio) = ...
             [expCmo1(:,181:end,:) expCmo1(:,1:180,:)];
     end
@@ -46,15 +33,15 @@ end
 %-------------------------------
 % Plot figure
 %-------------------------------
-
 % - Define plot params
-cmap = cbrewer('seq','YlGnBu',20,'linear');
+cmap = flipud(cbrewer('seq','YlGnBu',20,'linear'));
 mapproj = 'gall-peters';
 landcolor = [0.6 0.6 0.6];
 labelfontsize = 10;
 titlefontsize = 12;
 titlefontwt = 'bold';
 cbticklen = 0.03;
+cbnumticks = 5;
 cmin = 0; cmax = 8;
 
 % - Plot each annual mean global export map in turn
@@ -68,9 +55,9 @@ for inpp = 1:nppn
         m_proj(mapproj,'lon',[0 360],'lat',[min(lat1) max(lat1)])
         m_pcolor(lon1,lat1,cexp_mapnow);
         m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-        caxis([cmin cmax]); colormap(flipud(cmap)); shading flat;
+        caxis([cmin cmax]); colormap(cmap); shading flat;
         cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-        mapvarnow = cexp_mapnow; extend_cbar_ticklabels; % needs cmin,cmax,mapvarnow,cb 
+        mapvarnow = cexp_mapnow; extend_cbar_ticklabels; % needs cmin,cmax,mapvarnow,cb,cbnumticks
         m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
         title([npp_algs{inpp} ' NPP+' eratio_algs{ieratio} ' e-ratio_ '],...
             'fontsize',titlefontsize,'fontweight',titlefontwt);

@@ -1,4 +1,4 @@
-cbticklabsnow = compose('%g',linspace(cmin,cmax,5))';
+cbticklabsnow = compose('%g',linspace(cmin,cmax,cbnumticks))';
 if cmax<max(max(mapvarnow))
     cbticklabsnow{end} = ['>' cbticklabsnow{end}];
 end
