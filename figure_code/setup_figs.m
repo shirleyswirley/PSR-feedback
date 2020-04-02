@@ -3,6 +3,7 @@
 %-------------------------------
 utils_path = '/graid1/shirlleu/PSRfeedback/utils/';
 data_path = '/graid1/shirlleu/PSRfeedback/data/';
+model_output_path = '/graid1/shirlleu/PSRfeedback/model_output/';
 fig_save_path = '/graid1/shirlleu/PSRfeedback/pdfs_pngs/';
 
 %-------------------------------

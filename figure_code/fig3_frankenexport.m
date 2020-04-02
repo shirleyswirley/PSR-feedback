@@ -24,8 +24,8 @@ reg_map(reg_map==0) = 11; % Mediterannean Sea + other seas
 cmap=flipud(cbrewer('seq','YlGnBu',20,'linear'));
 mapproj = 'gall-peters';
 landcolor = [0.6 0.6 0.6];
-linewidth=2; % for regional contour lines
-linecolor=[0 0 0]; % for regional contour lines
+linewidth = 2; % for regional contour lines
+linecolor = [0 0 0]; % for regional contour lines
 labelfontsize = 10;
 titlefontsize = 12;
 titlefontwt = 'bold';
