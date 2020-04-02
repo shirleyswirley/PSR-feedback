@@ -7,9 +7,17 @@ setup_figs;
 %-------------------------------
 % - Main figure 6:
 circfactor = 0.9;
+figname = 'fig6';
+circadj = 1;
+betachylab = '\Delta\beta';
+rdchdir = 'shoaling'; % remin depth change dir
 
 % - Supplementary figure 4:
 %circfactor = 1.1;
+%figname = 'suppfig4';
+%circadj = -1;
+%betachylab = '\beta decrease';
+%rdchdir = 'deepening'; % remin depth change dir
 
 %-------------------------------
 % Load grid variables + regions map
@@ -334,23 +342,38 @@ title(['Baseline_ regional mean '...
     sprintf('%s{%f %f %f}','\color[rgb]',rdcol) 'remin depth'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-betamin = -0.01; betamax = 0.08;
-betaticks = linspace(betamin,betamax,10);
+if circfactor==0.9
+    betamax = 0.08; betalsn = 10;
+    betanoticklabs = 1:2:9;
+elseif circfactor==1.1
+    betamax = 0.09; betalsn = 11;
+    betanoticklabs = 4:2:10;
+end 
+betamin = -0.01;
+betaticks = linspace(betamin,betamax,betalsn);
+betaticks(2) = 0; % wasn't perfectly zero for some reason before
 betaticklabs = compose('%g',betaticks);
-for ilab=[1 3 5 7 9]
+for ilab=betanoticklabs
     betaticklabs{ilab} = ' ';
 end
-rdmin = -10; rdmax = 80;
-rdticks = linspace(rdmin,rdmax,10);
+if circfactor==0.9
+    rdmax = 80; rdlsn = 10;
+    rdnoticklabs = 1:2:9;
+elseif circfactor==1.1
+    rdmax = 90; rdlsn = 11;
+    rdnoticklabs = 4:2:10;
+end
+rdmin = -10;
+rdticks = linspace(rdmin,rdmax,rdlsn);
 rdticklabs = compose('%g',rdticks);
-for ilab=[1 3 5 7 9]
+for ilab=rdnoticklabs
     rdticklabs{ilab} = ' ';
 end
 
 subplot(223);
 [ax,hbeta,hrd]=plotyy(...
-    lat2,on_beta_z-kost_beta_z,...
-    lat2,-(on_rd_z-kost_rd_z));
+    lat2,circadj*(on_beta_z-kost_beta_z),...
+    lat2,-circadj*(on_rd_z-kost_rd_z));
 set(hbeta,'Color',betacol,'LineStyle','-','LineWidth',2);
 set(hrd,'Color',rdcol,'LineStyle','-','Linewidth',2);
 set(ax(1),'YColor',betacol,'XLim',[-80 80],...
@@ -364,9 +387,9 @@ set(ax(2),'YColor',rdcol,'XLim',[-80 80],...
     'fontsize',tickfontsize);
 rl1=refline(ax(1),0,ax(1).YLim(2)); rl1.Color='k';
 rl2=refline(ax(1),0,0); rl2.Color='k';
-ylabel(ax(1),'\Delta\beta',...
+ylabel(ax(1),betachylab,...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
-ylabel(ax(2),'\Remin depth shoaling [m]',...
+ylabel(ax(2),['Remin depth ' rdchdir ' [m]'],...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Latitude','fontsize',labelfontsize);
@@ -375,8 +398,8 @@ title('100-yr_ zonal change w/ PSR feedback',...
 
 subplot(224);
 [ax,hbeta,hrd]=plotyy(...
-    (1:nregs+1)-offset,[on_beta_rmeans on_beta_gmean]-[kost_beta_rmeans kost_beta_gmean],...
-    (1:nregs+1)+offset,-([on_rd_rmeans on_rd_gmean]-[kost_rd_rmeans kost_rd_gmean]),...
+    (1:nregs+1)-offset,circadj*([on_beta_rmeans on_beta_gmean]-[kost_beta_rmeans kost_beta_gmean]),...
+    (1:nregs+1)+offset,-circadj*([on_rd_rmeans on_rd_gmean]-[kost_rd_rmeans kost_rd_gmean]),...
     @(x,y) bar(x,y,barwidth), @(x,y) bar(x,y,barwidth));
 set(hbeta,'FaceColor',betacol);
 set(hrd,'FaceColor',rdcol);
@@ -392,20 +415,20 @@ set(ax(2),'YColor',rdcol,'YLim',[rdmin rdmax],...
     'fontsize',tickfontsize);
 rl1=refline(ax(1),0,ax(1).YLim(2)); rl1.Color='k'; % adds box top edge
 rl2=refline(ax(2),0,0); rl2.Color='k'; % make x-axis black
-ylabel(ax(1),'\Delta\beta','FontSize',labelfontsize,...
+ylabel(ax(1),betachylab,'FontSize',labelfontsize,...
     'FontWeight',labelfontwt);
-ylabel(ax(2),'Remin depth shoaling [m]',...
+ylabel(ax(2),['Remin depth ' rdchdir ' [m]'],...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Region','fontsize',labelfontsize);
 title('100-yr_ regional change w/ PSR feedback',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-disp('pause - manually move left subplots over to the left more')
+disp('pause - manually move lhs subplots over to the left moreby 12 or 20 left arrow clicks')
 pause
 
-print(f, [fig_save_path 'fig6_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'fig6_PSRfbpaper_final.png'], '-dpng', '-r300');
+print(f, [fig_save_path figname '_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
+print(f, [fig_save_path figname '_PSRfbpaper_final.png'], '-dpng', '-r300');
 
 disp('glob mean beta, Kost:');
 kost_beta_gmean

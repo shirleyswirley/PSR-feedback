@@ -1,16 +1,34 @@
-addpath(genpath('/graid1/shirlleu/matlabroutines'))
+close all;
+clear all;
+setup_figs;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Get relevant matfiles
-%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------------------------
+% Define desired circ rate change
+%-------------------------------
+% - Main figure 8:
+%circfactor = 0.9;
+%figname = 'fig8';
+%circadj = 1;
+%rdchdir = 'shoaling'; % remin depth change dir
 
-%---------------------
-% Tom's regions map (same grid as all other matfiles below)
-%---------------------
-regmapst = load('/graid1/shirlleu/PRiSM_GCM/data/PRiSMregions.mat');
-regmapgrid = regmapst.gridd;
-regmap = regmapst.R2d;
-%figure; pcolor(regmap); shading flat; colorbar;
+% - Supplementary figure 4:
+circfactor = 1.1;
+figname = 'suppfig5';
+circadj = -1;
+rdchdir = 'deepening'; % remin depth change dir
+
+%-------------------------------
+% Load grid variables + model output
+%-------------------------------
+% - Load grid variables + regions map
+reg_struct = load([data_path ...
+    'PRiSM_regions_2deg.mat']);
+M3d = reg_struct.M3d; gridd = reg_struct.gridd;
+lon2 = gridd.xt; lat2 = gridd.yt;
+isurf = find(M3d(:,:,1)==1);
+area_ocn_only = nan(size(gridd.Areat)); % m^2
+area_ocn_only(isurf) = gridd.Areat(isurf);
+area_oo_zsum = nansum(area_ocn_only,2);
 
 %---------------------
 % Baseline 1*circ
@@ -65,28 +83,19 @@ depths = gridd.zt;
 % - Baseline 
 p_bl = M3d*NaN;
 p_bl(iocn) = output.po4;
-ps_bl = squeeze(p_bl(:,:,1)); % surface
-ptc_bl = squeeze(p_bl(:,:,tcdepthidx)); % thermocline
 pzm_bl = squeeze(nanmean(p_bl,2)); % zonal mean
-ec_bl = output.expCmapSS;
 
 % - Feedback off
 load(fnameoff,'output');
 p_off = M3d*NaN;
 p_off(iocn) = output.po4end;
-ps_off = squeeze(p_off(:,:,1)); % surface
-ptc_off = squeeze(p_off(:,:,tcdepthidx)); % thermocline
 pzm_off = squeeze(nanmean(p_off,2)); % zonal mean
-ec_off = output.expCmapnow(:,:,end);
 
 % - Feedback on
 load(fnameon,'output');
 p_on = M3d*NaN;
 p_on(iocn) = output.po4end;
-ps_on = squeeze(p_on(:,:,1)); % surface
-ptc_on = squeeze(p_on(:,:,tcdepthidx)); % thermocline
 pzm_on = squeeze(nanmean(p_on,2)); % zonal mean
-ec_on = output.expCmapnow(:,:,end);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % PO4 zonal mean transects
