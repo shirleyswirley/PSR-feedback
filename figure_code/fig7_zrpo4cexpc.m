@@ -241,7 +241,7 @@ xlim([-80 80]); ylim(ylimsnow);
 set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Relative change [%]','fontsize',labelfontsize);
 title('100-yr change in zonal mean P_{200m}',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
@@ -259,7 +259,7 @@ xlim([0.5 nregs+1.5]); ylim(ylimsnow);
 set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Relative change [%]','fontsize',labelfontsize);
 title('100-yr change in regional mean P_{200m}',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
@@ -279,7 +279,7 @@ xlim([-80 80]); ylim(ylimsnow);
 set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Relative change [%]','fontsize',labelfontsize);
 title('100-yr change in zonal mean export',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
@@ -297,7 +297,7 @@ xlim([0.5 nregs+1.5]); ylim(ylimsnow);
 set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Relative change [%]','fontsize',labelfontsize);
 title('100-yr change in regional mean export',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
@@ -314,7 +314,7 @@ xlim([-80 80]); ylim(ylimsnow);
 set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Feedback strength [%]','fontsize',labelfontsize);
 title('Zonal mean global feedback strength',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
@@ -328,7 +328,7 @@ xlim([0.5 nregs+1.5]); ylim(ylimsnow);
 set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
-ylabel('[%]','fontsize',labelfontsize);
+ylabel('Feedback strength [%]','fontsize',labelfontsize);
 title('Regional mean global feedback strength',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 

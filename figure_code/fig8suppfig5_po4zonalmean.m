@@ -42,7 +42,7 @@ off_pzm = squeeze(nanmean(off_p,2)); % zonal mean
 
 % - PSR fb on in all regions,
 % new circ, 100 yr model output 
-on_fname = [model_output_path sprintf('BGRID_t+s+14c+cfc11_RAYLEIGH_sol1_sigma0.10_pop2dop_ann_np3_PSDfbonbvsen1_regblocksm1slopeonlynexpC_Kostbetainit_epsbtwn2and6p5_%.2fcirc_BUR0_BAL0_slowsink0_varCP1_progprodtype_0.5mumax_recalcremin1yrs_1ov1000dt_ts100yrs_prevNMinit.mat',circfactor)];
+on_fname = [model_output_path sprintf('BGRID_t+s+14c+cfc11_RAYLEIGH_sol1_sigma0.10_pop2dop_ann_np3_PSDfbonbvsen1_regblocksm1slopeonlynexpC_Kostbetainit_epsbtwn2and6p5_%.2fcirc_BUR0_BAL0_slowsink0_varCP1_progprodtype_0.5mumax_recalcremin10yrs_1ov1000dt_ts100yrs_prevNMinit.mat',circfactor)];
 load(on_fname,'output');
 on_p = M3d*NaN;
 on_p(iocn) = output.po4end;
