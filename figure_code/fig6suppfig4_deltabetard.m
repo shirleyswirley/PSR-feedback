@@ -268,9 +268,8 @@ onps_rd_z = ...
 %-------------------------------
 % Plot figure
 %-------------------------------
-ploterrbars=0;
-ebwidth = 100; % 1/ebwidth is the width, technically
-
+%ploterrbars=0;
+%ebwidth = 100; % 1/ebwidth is the width, technically
 tickfontsize = 9;
 labelfontsize = 10; labelfontwt = 'normal';
 titlefontsize = 11; titlefontwt = 'bold';
