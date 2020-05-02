@@ -5,5 +5,5 @@ end
 if cmin>min(min(mapvarnow))
     cbticklabsnow{1} = ['<' cbticklabsnow{1}];
 end
-cb.Ticks = linspace(cmin,cmax,5);
+cb.Ticks = linspace(cmin,cmax,cbnumticks);
 cb.TickLabels = cbticklabsnow;

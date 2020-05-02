@@ -77,15 +77,15 @@ bl_p = M3d*NaN; bl_p(iocn) = output.po4;
 bl_ce = output.expCmapSS;
 % - 200 m po4
 newdepth = 200; map3dnow = bl_p;
-interp_to_depth; bl_p200 = map2dnow;
 %needs didxsh,didxdp,map3dnow,newdepth
+interp_to_depth; bl_p200 = map2dnow;
 % - Zonal means
 bl_pzm = squeeze(nanmean(bl_p,2));
 bl_p200zm = squeeze(nanmean(bl_p200,2));
 bl_cezm = squeeze(nanmean(bl_ce,2));
 % - Regional + global means
-mapnow = bl_p200; calc_reg_global_means; bl_p200rm = mapnowrm;
 %needs mapnow,nregs,reg_map,area_ocn_only,tot_ocn_area
+mapnow = bl_p200; calc_reg_global_means; bl_p200rm = mapnowrm;
 mapnow = bl_ce; calc_reg_global_means; bl_cerm = mapnowrm;
 
 % ----- PSR fb off, new circ, 100 yr model output
@@ -95,15 +95,15 @@ off_p = M3d*NaN; off_p(iocn) = output.po4end;
 off_ce = output.expCmapnow(:,:,end);
 % - 200 m po4
 newdepth = 200; map3dnow = off_p;
-interp_to_depth; off_p200 = map2dnow;
 %needs didxsh,didxdp,map3dnow,newdepth
+interp_to_depth; off_p200 = map2dnow;
 % - Zonal means
 off_pzm = squeeze(nanmean(off_p,2));
 off_p200zm = squeeze(nanmean(off_p200,2));
 off_cezm = squeeze(nanmean(off_ce,2));
 % - Regional + global means
-mapnow = off_p200; calc_reg_global_means; off_p200rm = mapnowrm;
 %needs mapnow,nregs,reg_map,area_ocn_only,tot_ocn_area
+mapnow = off_p200; calc_reg_global_means; off_p200rm = mapnowrm;
 mapnow = off_ce; calc_reg_global_means; off_cerm = mapnowrm;
 
 % ----- Global PSR fb on, new circ, 100 yr model output 
@@ -113,15 +113,15 @@ on_p = M3d*NaN; on_p(iocn) = output.po4end;
 on_ce = output.expCmapnow(:,:,end);
 % - 200 m po4
 newdepth = 200; map3dnow = on_p;
-interp_to_depth; on_p200 = map2dnow;
 %needs didxsh,didxdp,map3dnow,newdepth
+interp_to_depth; on_p200 = map2dnow;
 % - Zonal means
 on_pzm = squeeze(nanmean(on_p,2));
 on_p200zm = squeeze(nanmean(on_p200,2));
 on_cezm = squeeze(nanmean(on_ce,2));
 % - Regional + global means 
-mapnow = on_p200; calc_reg_global_means; on_p200rm = mapnowrm;
 %needs mapnow,nregs,reg_map,area_ocn_only,tot_ocn_area
+mapnow = on_p200; calc_reg_global_means; on_p200rm = mapnowrm;
 mapnow = on_ce; calc_reg_global_means; on_cerm = mapnowrm;
 
 %-------------------------------
@@ -176,13 +176,13 @@ set(ax(2),'YColor',pcol,'XLim',[-80 80],...
     'YLim',[pmin pmax],'YTick',pticks,...
     'fontsize',tickfontsize);
 rl=refline(ax(1),0,ax(1).YLim(2)); rl.Color='k';
-ylabel(ax(1),'Export [molC m^2 yr^{-1}]',...
+ylabel(ax(1),'Export [molC m^{-2} yr^{-1}]',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 ylabel(ax(2),'P_{200m} [mmolP m^{-3}]',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Latitude','fontsize',labelfontsize);
-title(['Baseline_ zonal mean '...
+title(['Baseline zonal mean '...
     sprintf('%s{%f %f %f}','\color[rgb]',cecol) 'export' ...
     '\color{black} & ' ...
     sprintf('%s{%f %f %f}','\color[rgb]',pcol) 'P_{200m}'],...
@@ -207,20 +207,20 @@ set(ax(2),'YColor',pcol,'YLim',[pmin pmax],...
     'fontsize',tickfontsize);
 rl1=refline(ax(1),0,ax(1).YLim(2)); rl1.Color='k'; % adds box top edge
 rl2=refline(ax(2),0,ax(2).YLim(1)); rl2.Color='k'; % make x-axis black
-ylabel(ax(1),'Export [molC m^2 yr^{-1}]','FontSize',labelfontsize,...
+ylabel(ax(1),'Export [molC m^{-2} yr^{-1}]','FontSize',labelfontsize,...
     'FontWeight',labelfontwt);
 ylabel(ax(2),'P_{200m} [mmolP m^{-3}]',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Region','fontsize',labelfontsize);
-title(['Baseline_ regional mean '...
+title(['Baseline regional mean '...
     sprintf('%s{%f %f %f}','\color[rgb]',cecol) 'export' ...
     '\color{black} & ' ...
     sprintf('%s{%f %f %f}','\color[rgb]',pcol) 'P_{200m}'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 %---------ROW 2
-ylimsnow = sort(circadj*[-4.2 2]);
+ylimsnow = sort(circadj*[-4.2 1]);
 %ylimsnow = sort(circadj*[-5.5 2]);
 % - Relative change in zonal mean p200 from baseline case
 ax = subplot(423);
@@ -234,10 +234,6 @@ plot(lat2,100*roundn(off_p200zm-bl_p200zm,roundplp)...
     'linewidth',fbofflinewidth);
 plot(lat2,zeros(size(lat2)),'k');
 xlim([-80 80]); ylim(ylimsnow);
-%lgd = legend('On','Off','location','northwest',...
-%    'box','off','orientation','horizontal');
-%lgd.ItemTokenSize = [10,10];
-%title(lgd,'Global PSR feedback:','FontSize',8);
 set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
@@ -315,7 +311,7 @@ set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
 ylabel('Feedback strength [%]','fontsize',labelfontsize);
-title('Zonal mean global feedback strength',...
+title('Zonal mean global feedback strength_ ',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 % - Regional mean fb strength, actual and predicted
@@ -329,7 +325,7 @@ set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
 ylabel('Feedback strength [%]','fontsize',labelfontsize);
-title('Regional mean global feedback strength',...
+title('Regional mean global feedback strength_ ',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 fbst_cerm

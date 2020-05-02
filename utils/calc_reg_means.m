@@ -1,0 +1,6 @@
+mapnowrm = nan(1,nregs); 
+for ireg=1:nregs
+    mapnowrm(ireg) = ...
+        nansum(mapnow(reg_map==ireg).*area_ocn_only(reg_map==ireg))...
+        ./nansum(area_ocn_only(reg_map==ireg));
+end
