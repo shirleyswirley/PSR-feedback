@@ -35,21 +35,18 @@ end
 %-------------------------------
 % - Define plot params
 cmap = flipud(cbrewer('seq','YlGnBu',20,'linear'));
-mapproj = 'gall-peters';
-landcolor = [0.6 0.6 0.6];
+mapproj = 'gall-peters'; landcolor = [0.6 0.6 0.6];
 labelfontsize = 10;
-titlefontsize = 12;
-titlefontwt = 'bold';
-cbticklen = 0.03;
-cbnumticks = 5;
+titlefontsize = 12; titlefontwt = 'bold';
+cbticklen = 0.03; cbnumticks = 5;
 cmin = 0; cmax = 8;
 
 % - Plot each annual mean global export map in turn
 f=figure;
 set(f,'color','white','units','inches','position',[0.5 0.5 11 6]);
 isubplot=1;
-for inpp = 1:nppn
-    for ieratio = 1:eration
+for ieratio = 1:eration
+    for inpp = 1:nppn
         cexp_mapnow = nanmean(cexp_mon_maps(:,:,:,inpp,ieratio),3);
         subplot(3,3,isubplot);
         m_proj(mapproj,'lon',[0 360],'lat',[min(lat1) max(lat1)])

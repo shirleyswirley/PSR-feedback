@@ -22,7 +22,6 @@ figname = 'fig7';
 %-------------------------------
 % Load grid variables + regions map
 %-------------------------------
-% - Load grid variables + regions map
 reg_struct = load([data_path ...
     'PRiSM_regions_2deg.mat']);
 M3d = reg_struct.M3d; gridd = reg_struct.gridd;

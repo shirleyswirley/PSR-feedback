@@ -72,13 +72,13 @@ ax = subplot(222);
 m_proj(mapproj,'lon',[0 360],'lat',[min(lat1) max(lat1)])
 m_contourf(lon1,lat1,fpico_map,'linestyle','none');
 m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-colormap(ax,seqcmap); shading flat; cb = colorbar;
+colormap(ax,seqcmap); shading flat;
 cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
 m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
 title('Annual mean {\itf_{pico}}','fontsize',titlefontsize,'fontweight',titlefontwt);
 
 % - PO4 map
-ax=subplot(223);
+ax = subplot(223);
 m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
 m_contourf(lon2,lat2,po4_surf_map,'linestyle','none');
 m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
