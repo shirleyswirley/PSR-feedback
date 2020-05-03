@@ -3,7 +3,7 @@
 The code in this repository reproduces figures and tables in the following paper:
 <br>Leung, S., Weber, T., Cram, J. A., & Deutsch, C. Variable phytoplankton size distributions reduce the sensitivity of global export flux to climate change. <i>Submitted to Biogeosciences.</i>
 
-Please cite the above paper and the code itself (see here: http://doi.org/10.5281/zenodo.3783471) if you use any of it.
+Please cite the above paper and the code itself (see here: http://doi.org/10.5281/zenodo.3783799) if you use any of it.
 
 This code was written using MATLAB 9.6.0.1174912 (R2019a) Update 5.
 
