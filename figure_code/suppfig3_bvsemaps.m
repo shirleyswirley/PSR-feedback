@@ -16,7 +16,6 @@ eratio_algs_sh = {'L2000','D2005','L2011'};
 % beta vs. export maps (bvse_maps)
 eration = length(eratio_algs);
 nppn = length(npp_algs);
-timen = 160; % num of months in time series
 load([data_path 'globalbetavsexportmaps_tempregress/betavsexportn1tempregmo_VGPMVGPMECbPMcompiled.mat'],'lat1','lon1')
 lon1 = [lon1(181:end)' lon1(1:180)'+360];
 bvse_maps = nan(length(lat1),length(lon1),eration,nppn);
