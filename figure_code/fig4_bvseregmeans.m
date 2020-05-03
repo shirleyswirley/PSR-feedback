@@ -173,7 +173,7 @@ cbticklen = 0.03;
 
 f=figure;
 set(f,'color','white',...
-    'units','inches','position',[0.5 0.5 6.5 13]);
+    'units','inches','position',[0.5 0.5 5.5 11]);
 
 % - Reg mean beta vs. norm export slopes
 % for all 9 combos of NPP + e-ratio
@@ -220,8 +220,8 @@ for k = 1:length(regnumsnow)
 end
 errorbar(1:length(reg_names(regnumsnow)),[regwtedmeanbvsernow],...
     [regwted1stdbvser(regnumsnow)],'k.');
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
 colormap(ax,divcmap);
+cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
 caxis([-max(abs(regwtedmeanbvser)) max(abs(regwtedmeanbvser))]);
 xlim([0.5 length(reg_names(regnumsnow))+0.5]);
 set(gca,'XTickLabel',reg_names(regnumsnow),...
