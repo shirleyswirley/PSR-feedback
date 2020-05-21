@@ -55,11 +55,12 @@ f=figure;
 set(f,'color','white','units','inches',...
     'position', [0.5 0.5 6 7]);
 colorcell = {'r','g','b'};
-icolor = 1;
+linstycell = {'--','-',':'};
+iprof = 1;
 for idx=[find(epsilon==3.3) find(epsilon==4.3) find(epsilon==5.3)]
-    plot(Fcurves(:,idx),-z,'-','linewidth',2,'color',colorcell{icolor});
+    plot(Fcurves(:,idx),-z,linstycell{iprof},'linewidth',2,'color',colorcell{iprof});
     hold on;grid on;
-    icolor=icolor+1;
+    iprof=iprof+1;
 end
 %plot(((z+100)./100).^-0.858,-z,'k-','linewidth',2);
 %legend('\beta = 3.3','\beta = 4.3','\beta = 5.3','Martin Curve');
