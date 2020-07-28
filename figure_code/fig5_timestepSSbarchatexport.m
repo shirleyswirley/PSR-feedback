@@ -71,6 +71,9 @@ for icirc = 1:numcircfactors
     onps_time(:,icirc) = output.time;
 end
 
+disp('pause')
+pause
+
 %-------------------------------
 % Calculate SS abs and rel changes
 % in global mean export from baseline case
