@@ -111,26 +111,10 @@ end
 %-------------------------------
 % Calculate wted reg mean b vs. e
 %-------------------------------
-regwtedmeanbvsemap = nan(length(lat2),length(lon2));
-regwtedmean1stdbvsemap = nan(length(lat2),length(lon2));
 regwtedmeanbvsermat = nan(nregs,eration,nppn);
 regwtedmeanbvser = nan(nregs,1);
 regwted1stdbvser = nan(nregs,1);
 bvseregblocksmap = nan(length(lat2),length(lon2));
-
-% - Compute weighted mean
-% global resolved beta vs. export slope map
-regwtedmeanbvsemap = sum(sum(regwtsmap.*bvse_maps2,4),3);
-
-% - Compute weighted stdev above/below mean
-% global resolved beta vs. export slope map
-regwted1stdbvsemap = zeros(length(lat2),length(lon2));
-for inpp = 1:nppn
-    for ieratio = 1:eration
-        regwted1stdbvsemap = regwted1stdbvsemap + regwtsmap(:,:,ieratio,inpp).*(bvse_maps2(:,:,ieratio,inpp)-regwtedmeanbvsemap).^2;
-    end
-end
-regwted1stdbvsemap = regwted1stdbvsemap.^(1/2);
 
 % - Compute regional mean temporally regressed
 % beta vs. export slope for each NPP/e-ratio combo 
