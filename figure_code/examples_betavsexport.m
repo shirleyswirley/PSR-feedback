@@ -52,23 +52,23 @@ end
 % Compute map of # of non-nan months
 %-------------------------------
 % NOTE: something is wrong with this...
-be_nn_mon_maps = nan(length(lat1),length(lon1),nppn,eration);
-for ieratio = 1:eration
-    for inpp = 1:nppn
-        for ilat = 1:length(lat1)
-            for ilon = 1:length(lon1)
-                bnow = squeeze(beta_mon_map(ilat,ilon,:));
-                enow = squeeze(cexp_mon_maps(ilat,ilon,:,inpp,ieratio));
-                nancount = sum(~isnan([bnow, enow]),2);
-                be_nn_mon_maps(ilat,ilon,inpp,ieratio) = sum(nancount==2);
-            end
-        end
-    end
-end
-bennmapnow = squeeze(be_nn_mon_maps(:,:,1,2));
-figure;
-pcolor(lon1,lat1,squeeze(be_nn_mon_maps(:,:,1,1)));
-shading flat; colorbar;
+% be_nn_mon_maps = nan(length(lat1),length(lon1),nppn,eration);
+% for ieratio = 1:eration
+%     for inpp = 1:nppn
+%         for ilat = 1:length(lat1)
+%             for ilon = 1:length(lon1)
+%                 bnow = squeeze(beta_mon_map(ilat,ilon,:));
+%                 enow = squeeze(cexp_mon_maps(ilat,ilon,:,inpp,ieratio));
+%                 nancount = sum(~isnan([bnow, enow]),2);
+%                 be_nn_mon_maps(ilat,ilon,inpp,ieratio) = sum(nancount==2);
+%             end
+%         end
+%     end
+% end
+% bennmapnow = squeeze(be_nn_mon_maps(:,:,1,2));
+% figure;
+% pcolor(lon1,lat1,squeeze(be_nn_mon_maps(:,:,1,1)));
+% shading flat; colorbar;
 
 %-------------------------------
 % Regrid region map onto 1x1 satellite grid
@@ -84,7 +84,7 @@ regmap = reg_struct.R2d;
 
 lonidxs = [263, 339, 52, 160, 13, 301];
 latidxs = [95, 40, 91, 119, 134, 150];
-figure;
+f=figure;
 %pcolor(lon1,lat1,nanmean(beta_mon_map,3));
 pcolor(lon2,lat2,regmap);
 hold on;
@@ -92,6 +92,8 @@ for iidx = 1:length(lonidxs)
     scatter(lon1(lonidxs(iidx)),lat1(latidxs(iidx)),'k.');
 end
 shading flat; colorbar;
+print(f, [fig_save_path 'beta_export_timeseries_pts_map.pdf'], '-dpdf', '-r300');
+print(f, [fig_save_path 'beta_export_timeseries_pts_map.png'], '-dpng', '-r300');
 
 %-------------------------------
 % Count # of non-nan months at all lon at a given lat
@@ -171,9 +173,9 @@ for ieratio = 1:eration
     end
 end
 sgtitle(['lon=' num2str(lon1(lonidx)) ', lat=' num2str(lat1(latidx))], 'fontsize', sgtitlefontsize);
-print(f, [fig_save_path 'betaexporttimeseries_' regname '_lon1idx' num2str(lonidx) ...
+print(f, [fig_save_path 'beta_export_timeseries_' regname '_lon1idx' num2str(lonidx) ...
     '_lat1idx' num2str(latidx) '.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'betaexporttimeseries_' regname '_lon1idx' num2str(lonidx) ...
+print(f, [fig_save_path 'beta_export_timeseries_' regname '_lon1idx' num2str(lonidx) ...
     '_lat1idx' num2str(latidx) '.png'], '-dpng', '-r300');
 
 f=figure;
@@ -200,9 +202,9 @@ for ieratio = 1:eration
     end
 end
 sgtitle(['lon=' num2str(lon1(lonidx)) ', lat=' num2str(lat1(latidx))], 'fontsize', sgtitlefontsize);
-print(f, [fig_save_path 'betaexporttimeseriesfull_' regname '_lon1idx' num2str(lonidx) ...
+print(f, [fig_save_path 'beta_export_timeseries_full_' regname '_lon1idx' num2str(lonidx) ...
     '_lat1idx' num2str(latidx) '.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'betaexporttimeseriesfull_' regname '_lon1idx' num2str(lonidx) ...
+print(f, [fig_save_path 'beta_export_timeseries_full_' regname '_lon1idx' num2str(lonidx) ...
     '_lat1idx' num2str(latidx) '.png'], '-dpng', '-r300');
 
 f=figure;

@@ -1,4 +1,5 @@
 data/
+extra_pdfs_pngs/
 model_output/
 utils/colorbrewer
 utils/m_map
