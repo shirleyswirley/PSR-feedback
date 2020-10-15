@@ -281,7 +281,8 @@ betamin = 3.25; betamax = 5.25;
 betaticks = linspace(3,5,5);
 rdmin = 0; rdmax = 1700;
 rdticks = linspace(0,1600,5);
-rdticklabs = compose('%g',rdticks/100);
+%rdticklabs = compose('%g',rdticks/100);
+rdticklabs = compose('%g',rdticks);
 
 subplot(221);
 [ax,hbeta,hrd]=plotyy(...
@@ -300,7 +301,7 @@ set(ax(2),'YColor',rdcol,'XLim',[-80 80],...
 rl=refline(ax(1),0,ax(1).YLim(2)); rl.Color='k';
 ylabel(ax(1),'\beta',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
-ylabel(ax(2),'Remin depth [x100 m]',...
+ylabel(ax(2),'Remin depth [m]',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Latitude','fontsize',labelfontsize);
@@ -329,7 +330,7 @@ rl1=refline(ax(1),0,ax(1).YLim(2)); rl1.Color='k'; % adds box top edge
 rl2=refline(ax(2),0,ax(2).YLim(1)); rl2.Color='k'; % make x-axis black
 ylabel(ax(1),'\beta','FontSize',labelfontsize,...
     'FontWeight',labelfontwt);
-ylabel(ax(2),'Remin depth [x100 m]',...
+ylabel(ax(2),'Remin depth [m]',...
     'FontSize',labelfontsize,'FontWeight',labelfontwt);
 set(ax,'TickDir','out');
 xlabel('Region','fontsize',labelfontsize);
@@ -421,7 +422,7 @@ xlabel('Region','fontsize',labelfontsize);
 title('100-yr_ regional change w/ PSR feedback',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-disp('pause - manually move lhs subplots over to the left moreby 12 or 20 left arrow clicks')
+disp('pause - manually move lhs subplots over to the left more by 12 or 20 left arrow clicks')
 pause
 
 print(f, [fig_save_path figname '_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
