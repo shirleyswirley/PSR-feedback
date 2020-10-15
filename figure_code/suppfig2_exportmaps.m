@@ -8,6 +8,7 @@ setup_figs;
 % - List all npp and e-ratio algorithms
 npp_algs = {'VGPM','VGPME','CbPM'};
 eratio_algs = {'Laws2000','D2005PP','Laws2011D'};
+eratio_algs_abbrevs = {'L2000','D2005','L2011'};
 
 % - Initialize matrix to hold all monthly mean
 % export maps (cexp_mon_maps)
@@ -56,7 +57,7 @@ for ieratio = 1:eration
         cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
         mapvarnow = cexp_mapnow; extend_cbar_ticklabels; % needs cmin,cmax,mapvarnow,cb,cbnumticks
         m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-        title([npp_algs{inpp} ' NPP+' eratio_algs{ieratio} ' e-ratio_ '],...
+        title([npp_algs{inpp} ' NPP+' eratio_algs_abbrevs{ieratio} ' e-ratio_ '],...
             'fontsize',titlefontsize,'fontweight',titlefontwt);
         isubplot=isubplot+1;
     end
