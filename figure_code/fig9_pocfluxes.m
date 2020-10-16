@@ -1,7 +1,3 @@
-plotonly=0;
-
-if plotonly==0
-
 close all;
 clear all;
 setup_figs;
@@ -12,7 +8,8 @@ setup_figs;
 %-------------------------------
 figname = 'fig9';
 circfactor = 0.9;
-fluxdepth = 725; % m below bottom of euphotic zone (75 m)
+fluxdepth = 725; % m below bottom of euphotic zone
+ezdepth = 75; % bottom of euphotic zone
 
 %-------------------------------
 % Load grid variables + regions map
@@ -168,32 +165,16 @@ end
 
 % - Calculate flux actual reg/global, zonal mean fb strength
 % --> assume kost_nflux_map_z == on_nflux_map_z
-fbst_fluxzm = nan(length(kost_nflux_map_z),length(lat2)); 
 fbst_fluxrm = nan(length(kost_nflux_map_z),nregs+1); 
 roundplf = -3;
 for iz=1:length(kost_nflux_map_z)
-    fbst_fluxzm(iz,:) = 100*roundn(on_fluxzm(iz,:)-off_fluxzm(iz,:),roundplf)...
-        ./(off_fluxzm(iz,:)-bl_fluxzm(iz,:));
     fbst_fluxrm(iz,:) = 100*roundn(on_fluxrm(iz,:)-off_fluxrm(iz,:),roundplf)...
         ./(off_fluxrm(iz,:)-bl_fluxrm(iz,:));
 end
 
-% - Calculate reg/global, zonal mean depths at which fb strength
+% - Calculate reg/global mean depths at which fb strength
 % switches from negative to positive
 % (fbstsd = feedback strength switch depth)
-fbstsd_fluxzm = nan(nregs+1,1);
-for ilat = 1:length(lat2)
-    fbstnow = fbst_fluxzm(:,ilat);
-    idx_below = find(fbstnow>=0, 1);
-    if isempty(idx_below) | idx_below==1
-        fbstsd_fluxzm(ilat) = NaN;
-    elseif fbstnow(idx_below)==0
-        fbstsd_fluxzm(ilat) = kost_nflux_map_z(idx_below);
-    else
-        fbstsd_fluxzm(ilat) = interp1([fbstnow(idx_below-1) fbstnow(idx_below)],...
-                        [kost_nflux_map_z(idx_below-1) kost_nflux_map_z(idx_below)],0);
-    end
-end
 fbstsd_fluxrm = nan(nregs+1,1); 
 for ireg = 1:nregs+1
     fbstnow = fbst_fluxrm(:,ireg);
@@ -207,14 +188,16 @@ for ireg = 1:nregs+1
                         [kost_nflux_map_z(idx_below-1) kost_nflux_map_z(idx_below)],0);
     end
 end
-
-end % end if plotonly==0
+fbstsd_regblocksmap = nan(size(reg_map));
+for ireg = 1:nregs
+    fbstsd_regblocksmap(reg_map==ireg) = fbstsd_fluxrm(ireg);
+end
 
 %-------------------------------
 % Plot zonal, regional mean figure
 %-------------------------------
 tickfontsize = 9;
-labelfontsize = 10; labelfontwt = 'normal';
+labelfontsize = 10;
 titlefontsize = 11; titlefontwt = 'bold';
 fbofflinestyle='-'; fbonlinestyle='--';
 fbofflinewidth=2; fbonlinewidth=2;
@@ -225,7 +208,6 @@ f=figure; set(f,'Color','White',...
 
 %---------ROW 1
 ylimsnow = sort([-18 1]);
-%ylimsnow = sort(circadj*[-5.5 2]);
 
 % - Relative change in zonal mean flux from baseline case
 ax = subplot(221);
@@ -245,7 +227,7 @@ set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
 ylabel('Relative change [%]','fontsize',labelfontsize);
-title(['100-yr change in zonal mean flux at ' num2str(fluxdepth+75) ' m'],...
+title(['100-yr change in zonal mean flux at ' num2str(fluxdepth+ezdepth) ' m'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 % - Rel change in regional mean flux from baseline case
@@ -263,38 +245,36 @@ set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
 ylabel('Relative change [%]','fontsize',labelfontsize);
-title(['100-yr change in regional mean flux at ' num2str(fluxdepth+75) ' m'],...
+title(['100-yr change in regional mean flux at ' num2str(fluxdepth+ezdepth) ' m'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 %---------ROW 2
-% MAKE THIS INTO MAP INSTEAD!!!!
-% DEPTHS DOWN TO 2000 M, INTERVAL OF 25 M
-% ylimsnow = 
+seqcmap = cbrewer('seq','YlGnBu',10,'linear');
+mapproj = 'gall-peters'; landcolor = [0.6 0.6 0.6];
+reglinewidth = 2; reglinecolor = [0 0 0];
+labelfontsize = 11;
+titlefontsize = 13; titlefontwt = 'bold';
+cbticklen = 0.03;
 
-% - Zonal mean depth where PSR feedback goes to 0
-ax = subplot(223);
-plot(lat2, -fbstsd_fluxzm,...
-    'color',fcol,'linestyle',fbofflinestyle,...
-    'linewidth',fbofflinewidth); hold on;
-xlim([-80 80]); % ylim(ylimsnow);
-set(ax,'XTick',linspace(-80,80,9),...
-    'TickDir','out','fontsize',tickfontsize);
-xlabel('Latitude','fontsize',labelfontsize);
-ylabel('Depth [m]','fontsize',labelfontsize);
-title('Zonal mean depth where PSR feedback goes to 0',...
-    'fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - Regional mean depth where PSR feedback goes to 0
-barwidth = 0.8;
-ax = subplot(224);
-solidbars = bar(1:nregs+1, -fbstsd_fluxrm,...
-                barwidth, 'facecolor', fcol);
-xlim([0.5 nregs+1.5]); % ylim(ylimsnow);
-set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
-    'TickDir','out','fontsize',tickfontsize);
-xlabel('Region','fontsize',labelfontsize);
-ylabel('Depth [m]','fontsize',labelfontsize);
-title('Regional mean depth where PSR feedback goes to 0',...
+% - Map of regional mean depth where PSR feedback goes to 0
+ax = subplot(2,2,[3 4]);
+m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
+m_pcolor(lon2,lat2,ezdepth+fbstsd_regblocksmap);
+m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
+colormap(ax,seqcmap); shading flat;
+cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
+caxis([110 435]);
+cb.Ticks = [125, 225, 325, 425]; cb.TickLabels{4} = '>425';
+m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
+hold on;
+nreg = max(reg_map(:));
+for i = 1:nreg
+    RR = double(reg_map==i);
+    RR(M3d(:,:,1)==0) = NaN;
+    m_contour(lon2,lat2,RR,[.5 .5],'k',...
+        'linewidth',reglinewidth,'linecolor',reglinecolor);
+end
+title('Depth where PSR feedback goes to 0 [m]',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 print(f, [fig_save_path figname '_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
