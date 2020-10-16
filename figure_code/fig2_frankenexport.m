@@ -58,5 +58,5 @@ end
 title('Export [molC m^{-2} yr^{-1}]',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-print(f, [fig_save_path 'fig3_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'fig3_PSRfbpaper_final.png'], '-dpng', '-r300');
+print(f, [fig_save_path 'fig2_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
+print(f, [fig_save_path 'fig2_PSRfbpaper_final.png'], '-dpng', '-r300');

@@ -7,7 +7,7 @@ setup_figs;
 %-------------------------------
 circfactor = 0.9;
 circadj = 1;
-figname = 'fig9';
+figname = 'fig10';
 
 %-------------------------------
 % Load grid variables + regions map

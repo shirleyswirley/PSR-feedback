@@ -114,7 +114,6 @@ end
 regwtedmeanbvsermat = nan(nregs,eration,nppn);
 regwtedmeanbvser = nan(nregs,1);
 regwted1stdbvser = nan(nregs,1);
-bvseregblocksmap = nan(length(lat2),length(lon2));
 
 % - Compute regional mean temporally regressed
 % beta vs. export slope for each NPP/e-ratio combo 
@@ -236,5 +235,5 @@ end
 title('Final map of_   ',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-print(f, [fig_save_path 'fig4_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'fig4_PSRfbpaper_final.png'], '-dpng', '-r300');
+print(f, [fig_save_path 'fig3_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
+print(f, [fig_save_path 'fig3_PSRfbpaper_final.png'], '-dpng', '-r300');
