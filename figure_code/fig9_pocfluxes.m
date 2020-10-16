@@ -10,8 +10,9 @@ setup_figs;
 % Define desired circ rate change
 % and analyzed flux depth
 %-------------------------------
+figname = 'fig9';
 circfactor = 0.9;
-fluxdepth = 90;
+fluxdepth = 725; % m below bottom of euphotic zone (75 m)
 
 %-------------------------------
 % Load grid variables + regions map
@@ -104,7 +105,7 @@ if load_flux_map==1
     on_nflux_map_z = z;
 else
     var_des = ...
-        ['Normalized POC flux profiles calc using PRiSM from 0.9 circ fb on, 100-yr beta map; model output used was' on_fname];
+        ['Normalized POC flux profiles calc using PRiSM from ' sprintf('%.2f',circfactor) ' circ fb on, 100-yr beta map; model output used was' on_fname];
     [on_nflux_map, on_nflux_map_z] = calc_norm_flux_3dmap(...
         lon2,lat2,on_beta_map,beta_name,var_des);
 end
@@ -132,149 +133,82 @@ end
 kost_flux_zidx = find(kost_nflux_map_z==fluxdepth);
 on_flux_zidx = find(on_nflux_map_z==fluxdepth);
 
-bl_flux = bl_ce.*kost_nflux_map(:,:,kost_flux_zidx);
-off_flux = off_ce.*kost_nflux_map(:,:,kost_flux_zidx);
-on_flux = on_ce.*on_nflux_map(:,:,on_flux_zidx); 
-
-bl_fluxzm = squeeze(nanmean(bl_flux,2));
-off_fluxzm = squeeze(nanmean(off_flux,2));
-on_fluxzm = squeeze(nanmean(on_flux,2));
-
-mapnow = bl_flux; calc_reg_global_means; bl_fluxrm = mapnowrm;
-mapnow = off_flux; calc_reg_global_means; off_fluxrm = mapnowrm;
-mapnow = on_flux; calc_reg_global_means; on_fluxrm = mapnowrm;
-
-% - Calculate export actual reg/global, zonal mean fb strength
-roundple = -3;
-fbst_cerm = 100*roundn(on_cerm-off_cerm,roundple)./(off_cerm-bl_cerm);
-fbst_cezm = 100*roundn(on_cezm-off_cezm,roundple)./(off_cezm-bl_cezm);
-
-% - Calculate flux actual reg/global, zonal mean fb strength
-roundplf = -3;
-fbst_fluxrm = 100*roundn(on_fluxrm-off_fluxrm,roundplf)./(off_fluxrm-bl_fluxrm);
-fbst_fluxzm = 100*roundn(on_fluxzm-off_fluxzm,roundplf)./(off_fluxzm-bl_fluxzm);
-
+bl_flux = nan(size(kost_nflux_map));
+off_flux = nan(size(kost_nflux_map));
+for iz=1:length(kost_nflux_map_z)
+    bl_flux(:,:,iz) = bl_ce.*kost_nflux_map(:,:,iz);
+    off_flux(:,:,iz) = off_ce.*kost_nflux_map(:,:,iz);
+end
+on_flux = nan(size(on_nflux_map));
+for iz=1:length(on_nflux_map_z)
+    on_flux(:,:,iz) = on_ce.*on_nflux_map(:,:,iz);
 end
 
-%-------------------------------
-% Plot map figure
-%-------------------------------
-% - Define plot params
-seqcmap = cbrewer('seq','YlGnBu',20,'linear');
-divcmap = cbrewer('div','RdBu',21,'linear'); 
-mapproj = 'gall-peters';
-landcolor = [0.6 0.6 0.6];
-labelfontsize = 10;
-titlefontsize = 12;
-titlefontwt = 'bold';
-cbticklen = 0.03;
-cmin = -4.5; cmax = 1;
-cminmax = 2.25;
+bl_fluxzm = nan(length(kost_nflux_map_z),length(lat2));
+off_fluxzm = nan(length(kost_nflux_map_z),length(lat2));
+for iz=1:length(kost_nflux_map_z)
+    bl_fluxzm(iz,:) = nanmean(bl_flux(:,:,iz),2);
+    off_fluxzm(iz,:) = nanmean(off_flux(:,:,iz),2);
+end
+on_fluxzm = nan(length(on_nflux_map_z),length(lat2));
+for iz=1:length(on_nflux_map_z)
+    on_fluxzm(iz,:) = nanmean(on_flux(:,:,iz),2);
+end
 
-f=figure;
-set(f,'color','white','units','inches',...
-    'position',[0.5 0.5 13 7],'resize','off','paperpositionmode','auto');
+bl_fluxrm = nan(length(kost_nflux_map_z),nregs+1);
+off_fluxrm = nan(length(kost_nflux_map_z),nregs+1);
+for iz=1:length(kost_nflux_map_z)
+    mapnow = bl_flux(:,:,iz); calc_reg_global_means; bl_fluxrm(iz,:) = mapnowrm;
+    mapnow = off_flux(:,:,iz); calc_reg_global_means; off_fluxrm(iz,:) = mapnowrm;
+end
+on_fluxrm = nan(length(on_nflux_map_z),nregs+1);
+for iz=1:length(on_nflux_map_z)
+    mapnow = on_flux(:,:,iz); calc_reg_global_means; on_fluxrm(iz,:) = mapnowrm;
+end
 
-% - Baseline flux map
-ax = subplot(331);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,log10(bl_flux),'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([cmin cmax]);
-colormap(ax,seqcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('log10(Baseline flux [molC m^{-2} yr^{-1}])','fontsize',titlefontsize,'fontweight',titlefontwt);
+% - Calculate flux actual reg/global, zonal mean fb strength
+% --> assume kost_nflux_map_z == on_nflux_map_z
+fbst_fluxzm = nan(length(kost_nflux_map_z),length(lat2)); 
+fbst_fluxrm = nan(length(kost_nflux_map_z),nregs+1); 
+roundplf = -3;
+for iz=1:length(kost_nflux_map_z)
+    fbst_fluxzm(iz,:) = 100*roundn(on_fluxzm(iz,:)-off_fluxzm(iz,:),roundplf)...
+        ./(off_fluxzm(iz,:)-bl_fluxzm(iz,:));
+    fbst_fluxrm(iz,:) = 100*roundn(on_fluxrm(iz,:)-off_fluxrm(iz,:),roundplf)...
+        ./(off_fluxrm(iz,:)-bl_fluxrm(iz,:));
+end
 
-% - fb off
-ax = subplot(332);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,log10(off_flux),'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([cmin cmax]);
-colormap(ax,seqcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('fb off','fontsize',titlefontsize,'fontweight',titlefontwt);
+% - Calculate reg/global, zonal mean depths at which fb strength
+% switches from negative to positive
+% (fbstsd = feedback strength switch depth)
+fbstsd_fluxzm = nan(nregs+1,1);
+for ilat = 1:length(lat2)
+    fbstnow = fbst_fluxzm(:,ilat);
+    idx_below = find(fbstnow>=0, 1);
+    if isempty(idx_below) | idx_below==1
+        fbstsd_fluxzm(ilat) = NaN;
+    elseif fbstnow(idx_below)==0
+        fbstsd_fluxzm(ilat) = kost_nflux_map_z(idx_below);
+    else
+        fbstsd_fluxzm(ilat) = interp1([fbstnow(idx_below-1) fbstnow(idx_below)],...
+                        [kost_nflux_map_z(idx_below-1) kost_nflux_map_z(idx_below)],0);
+    end
+end
+fbstsd_fluxrm = nan(nregs+1,1); 
+for ireg = 1:nregs+1
+    fbstnow = fbst_fluxrm(:,ireg);
+    idx_below = find(fbstnow>=0, 1);
+    if isempty(idx_below) | idx_below==1
+        fbstsd_fluxrm(ireg) = NaN;
+    elseif fbstnow(idx_below)==0
+        fbstsd_fluxrm(ireg) = kost_nflux_map_z(idx_below);
+    else
+        fbstsd_fluxrm(ireg) = interp1([fbstnow(idx_below-1) fbstnow(idx_below)],...
+                        [kost_nflux_map_z(idx_below-1) kost_nflux_map_z(idx_below)],0);
+    end
+end
 
-% - fb on
-ax = subplot(333);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,log10(on_flux),'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([cmin cmax]);
-colormap(ax,seqcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('fb on','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - fb on minus off
-ax = subplot(334);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,on_flux-off_flux,'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-0.2 0.2]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('on-off [molC m^{-2} yr^{-1}]','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - fb off minus bl
-ax = subplot(335);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,off_flux-bl_flux,'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-cminmax cminmax]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('off-bl','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - fb on minus bl
-ax = subplot(336);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,on_flux-bl_flux,'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-cminmax cminmax]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('on-bl','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - (fb on minus off)/(fb off minus bl) = fb strength
-ax = subplot(337);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,(on_flux-off_flux)./(off_flux-bl_flux),'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-0.3 0.3]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('(on-off)/(off-bl)=fb strength','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - (fb off minus bl)/bl
-ax = subplot(338);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,(off_flux-bl_flux)./bl_flux,'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-0.3 0.3]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('(off-bl)/bl','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - (fb on minus bl)/bl
-ax = subplot(339);
-m_proj(mapproj,'lon',[0 360],'lat',[min(lat2) max(lat2)]);
-m_contourf(lon2,lat2,(on_flux-bl_flux)./bl_flux,'linestyle','none');
-m_grid('xtick',[0 90 180 270 360],'xlabeldir','middle','fontsize',labelfontsize);
-caxis([-0.3 0.3]);
-colormap(ax,divcmap); shading flat;
-cb = colorbar; cb.TickLength = cbticklen; cb.FontSize=labelfontsize;
-m_coast('patch',landcolor,'edgecolor','k'); % must go after shading flat
-title('(on-bl)/bl','fontsize',titlefontsize,'fontweight',titlefontwt);
-
-sgtitle(['Depth = ' num2str(fluxdepth) ' m']);
+end % end if plotonly==0
 
 %-------------------------------
 % Plot zonal, regional mean figure
@@ -284,84 +218,25 @@ labelfontsize = 10; labelfontwt = 'normal';
 titlefontsize = 11; titlefontwt = 'bold';
 fbofflinestyle='-'; fbonlinestyle='--';
 fbofflinewidth=2; fbonlinewidth=2;
-cecol = [0 0 0.8]; fcol = [1 0.4 0];
+fcol = [0 0 0.8];
 
 f=figure; set(f,'Color','White',...
-    'Units','Inches','Position',[1 1 8.5 10]);
+    'Units','Inches','Position',[1 1 8.5 5]);
 
 %---------ROW 1
-cemin = 0; cemax = 10;
-ceticks = linspace(cemin,cemax,6);
-fmin = 0; fmax = 10;
-fticks = linspace(fmin,fmax,6);
-
-% - Zonal avgs for baseline 1*circ case
-subplot(421);
-[ax,hce,hp]=plotyy(lat2,bl_cezm,lat2,bl_fluxzm);
-set(hce,'Color',cecol,'LineStyle','-','LineWidth',2);
-set(hp,'Color',fcol,'LineStyle','-','Linewidth',2);
-set(ax(1),'YColor',cecol,'XLim',[-80 80],...
-    'XTick',linspace(-80,80,9),'box','off',...
-    'YLim',[cemin cemax],'YTick',ceticks,...
-    'fontsize',tickfontsize);
-set(ax(2),'YColor',fcol,'XLim',[-80 80],...
-    'YLim',[fmin fmax],'YTick',fticks,...
-    'fontsize',tickfontsize);
-rl=refline(ax(1),0,ax(1).YLim(2)); rl.Color='k';
-ylabel(ax(1),'Export [molC m^{-2} yr^{-1}]',...
-    'FontSize',labelfontsize,'FontWeight',labelfontwt);
-ylabel(ax(2),['Flux_{' num2str(fluxdepth) 'm} [molC m^{-2} yr^{-1}]'],...
-    'FontSize',labelfontsize,'FontWeight',labelfontwt);
-set(ax,'TickDir','out');
-xlabel('Latitude','fontsize',labelfontsize);
-title(['Baseline zonal mean '...
-    sprintf('%s{%f %f %f}','\color[rgb]',cecol) 'export' ...
-    '\color{black} & ' ...
-    sprintf('%s{%f %f %f}','\color[rgb]',fcol) 'flux_{' num2str(fluxdepth) 'm}'],...
-    'fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - Regional avgs for baseline 1*circ case
-barwidth = 0.3; offset = barwidth/2;
-subplot(422);
-[ax,hce,hp]=plotyy(...
-    (1:nregs+1)-offset,bl_cerm,...
-    (1:nregs+1)+offset,bl_fluxrm,...
-    @(x,y) bar(x,y,barwidth), @(x,y) bar(x,y,barwidth));
-set(hce,'FaceColor',cecol);
-set(hp,'FaceColor',fcol);
-set(ax(1),'YColor',cecol,'YLim',[cemin cemax],'box','off',...
-    'YTick',ceticks,'XLim',[0.5 nregs+1.5],...
-    'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
-    'fontsize',tickfontsize);
-set(ax(2),'YColor',fcol,'YLim',[fmin fmax],...
-    'YTick',fticks,'XLim',[0.5 nregs+1.5],...
-    'XTick',[],...
-    'fontsize',tickfontsize);
-rl1=refline(ax(1),0,ax(1).YLim(2)); rl1.Color='k'; % adds box top edge
-rl2=refline(ax(2),0,ax(2).YLim(1)); rl2.Color='k'; % make x-axis black
-ylabel(ax(1),'Export [molC m^{-2} yr^{-1}]','FontSize',labelfontsize,...
-    'FontWeight',labelfontwt);
-ylabel(ax(2),['Flux_{' num2str(fluxdepth) 'm} [molC m^{-2} yr^{-1}]'],...
-    'FontSize',labelfontsize,'FontWeight',labelfontwt);
-set(ax,'TickDir','out');
-xlabel('Region','fontsize',labelfontsize);
-title(['Baseline regional mean '...
-    sprintf('%s{%f %f %f}','\color[rgb]',cecol) 'export' ...
-    '\color{black} & ' ...
-    sprintf('%s{%f %f %f}','\color[rgb]',fcol) 'flux_{' num2str(fluxdepth) 'm}'],...
-    'fontsize',titlefontsize,'fontweight',titlefontwt);
-
-%---------ROW 2
 ylimsnow = sort([-18 1]);
 %ylimsnow = sort(circadj*[-5.5 2]);
+
 % - Relative change in zonal mean flux from baseline case
-ax = subplot(423);
-plot(lat2,100*roundn(on_fluxzm-bl_fluxzm,roundplf)...
-    ./bl_fluxzm,...
+ax = subplot(221);
+plot(lat2,100*...
+        roundn(on_fluxzm(on_flux_zidx,:)-bl_fluxzm(kost_flux_zidx,:),roundplf)...
+        ./bl_fluxzm(kost_flux_zidx,:),...
     'color',fcol,'linestyle',fbonlinestyle,...
     'linewidth',fbonlinewidth); hold on;
-plot(lat2,100*roundn(off_fluxzm-bl_fluxzm,roundplf)...
-    ./bl_fluxzm,...
+plot(lat2,100*...
+        roundn(off_fluxzm(kost_flux_zidx,:)-bl_fluxzm(kost_flux_zidx,:),roundplf)...
+        ./bl_fluxzm(kost_flux_zidx,:),...
     'color',fcol,'linestyle',fbofflinestyle,...
     'linewidth',fbofflinewidth);
 plot(lat2,zeros(size(lat2)),'k');
@@ -370,94 +245,57 @@ set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
 ylabel('Relative change [%]','fontsize',labelfontsize);
-title(['100-yr change in regional mean flux_{' num2str(fluxdepth) 'm}'],...
+title(['100-yr change in zonal mean flux at ' num2str(fluxdepth+75) ' m'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
 % - Rel change in regional mean flux from baseline case
 barwidth = 0.8;
-ax = subplot(424);
-solidbars = bar(...
-    (1:nregs+1)-0.15,100*roundn(off_fluxrm-bl_fluxrm,roundplf)...
-    ./bl_fluxrm,barwidth/3); hold on;
-hatchedbars = bar(...
-    (1:nregs+1)+0.15,100*roundn(on_fluxrm-bl_fluxrm,roundplf)...
-    ./bl_fluxrm,barwidth/3,'facecolor','white');
+ax = subplot(222);
+solidbars = bar((1:nregs+1)-0.15,...
+    100*roundn(off_fluxrm(kost_flux_zidx,:)-bl_fluxrm(kost_flux_zidx,:),roundplf)...
+        ./bl_fluxrm(kost_flux_zidx,:),barwidth/3); hold on;
+hatchedbars = bar((1:nregs+1)+0.15,...
+    100*roundn(on_fluxrm(on_flux_zidx,:)-bl_fluxrm(kost_flux_zidx,:),roundplf)...
+        ./bl_fluxrm(kost_flux_zidx,:),barwidth/3,'facecolor','white');
 colornow = fcol; format_fbonoff_bars; % needs colornow,hatchedbars,solidbars:
 xlim([0.5 nregs+1.5]); ylim(ylimsnow);
 set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
 ylabel('Relative change [%]','fontsize',labelfontsize);
-title(['100-yr change in regional mean flux_{' num2str(fluxdepth) 'm}'],...
+title(['100-yr change in regional mean flux at ' num2str(fluxdepth+75) ' m'],...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-%---------ROW 3
-ylimsnow = sort([-17 1]);
-%ylimsnow = sort(circadj*[-20 1]);
-% - Relative change in zonal mean ce from baseline case
-ax = subplot(425);
-plot(lat2,100*roundn(off_cezm-bl_cezm,roundplf)./bl_cezm,...
-    'color',cecol,'linestyle',fbofflinestyle,...
+%---------ROW 2
+% MAKE THIS INTO MAP INSTEAD!!!!
+% DEPTHS DOWN TO 2000 M, INTERVAL OF 25 M
+% ylimsnow = 
+
+% - Zonal mean depth where PSR feedback goes to 0
+ax = subplot(223);
+plot(lat2, -fbstsd_fluxzm,...
+    'color',fcol,'linestyle',fbofflinestyle,...
     'linewidth',fbofflinewidth); hold on;
-plot(lat2,100*roundn(on_cezm-bl_cezm,roundplf)./bl_cezm,...
-    'color',cecol,'linestyle',fbonlinestyle,...
-    'linewidth',fbonlinewidth);
-plot(lat2,zeros(size(lat2)),'k');
-xlim([-80 80]); ylim(ylimsnow);
+xlim([-80 80]); % ylim(ylimsnow);
 set(ax,'XTick',linspace(-80,80,9),...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Latitude','fontsize',labelfontsize);
-ylabel('Relative change [%]','fontsize',labelfontsize);
-title('100-yr change in zonal mean export_ ',...
+ylabel('Depth [m]','fontsize',labelfontsize);
+title('Zonal mean depth where PSR feedback goes to 0',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-% - Rel change in regional mean ce from baseline case
+% - Regional mean depth where PSR feedback goes to 0
 barwidth = 0.8;
-ax = subplot(426);
-solidbars = bar(...
-    (1:nregs+1)-0.15,100*roundn(off_cerm-bl_cerm,roundple)...
-    ./bl_cerm,barwidth/3); hold on;
-hatchedbars = bar(...
-    (1:nregs+1)+0.15,100*roundn(on_cerm-bl_cerm,roundple)...
-    ./bl_cerm,barwidth/3,'facecolor','white');
-colornow = cecol; format_fbonoff_bars; % needs colornow,hatchedbars,solidbars:
-xlim([0.5 nregs+1.5]); ylim(ylimsnow);
+ax = subplot(224);
+solidbars = bar(1:nregs+1, -fbstsd_fluxrm,...
+                barwidth, 'facecolor', fcol);
+xlim([0.5 nregs+1.5]); % ylim(ylimsnow);
 set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
     'TickDir','out','fontsize',tickfontsize);
 xlabel('Region','fontsize',labelfontsize);
-ylabel('Relative change [%]','fontsize',labelfontsize);
-title('100-yr change in regional mean export_ ',...
+ylabel('Depth [m]','fontsize',labelfontsize);
+title('Regional mean depth where PSR feedback goes to 0',...
     'fontsize',titlefontsize,'fontweight',titlefontwt);
 
-%---------ROW 4
-ylimsnow = [-30 30];
-% - Zonal mean fb strength, export and flux
-ax = subplot(427);
-plot(lat2,fbst_cezm,...
-    'Color',cecol,'LineStyle','-','LineWidth',2); hold on;
-plot(lat2,fbst_fluxzm,...
-    'Color',fcol,'LineStyle','-','LineWidth',2);
-xlim([-80 80]); ylim(ylimsnow);
-set(ax,'XTick',linspace(-80,80,9),...
-    'TickDir','out','fontsize',tickfontsize);
-xlabel('Latitude','fontsize',labelfontsize);
-ylabel('Feedback strength [%]','fontsize',labelfontsize);
-title('Zonal mean global feedback strength_ ',...
-    'fontsize',titlefontsize,'fontweight',titlefontwt);
-
-% - Regional mean fb strength, export and flux
-barwidth=1; offset = 0.125;
-ax = subplot(428);
-b = bar(1:nregs+1,[fbst_cerm' fbst_fluxrm'],barwidth);
-set(b(1),'facecolor',cecol);
-set(b(2),'facecolor',fcol);
-xlim([0.5 nregs+1.5]); ylim(ylimsnow);
-set(ax,'XTick',1:nregs+1,'XTickLabel',[reg_names {'GLB'}],...
-    'TickDir','out','fontsize',tickfontsize);
-xlabel('Region','fontsize',labelfontsize);
-ylabel('Feedback strength [%]','fontsize',labelfontsize);
-title('Regional mean global feedback strength_ ',...
-    'fontsize',titlefontsize,'fontweight',titlefontwt);
-
-print(f, [fig_save_path 'flux_at_' num2str(fluxdepth) 'm_depth.pdf'], '-dpdf', '-r300');
-print(f, [fig_save_path 'flux_at_' num2str(fluxdepth) 'm_depth.png'], '-dpng', '-r300');
+print(f, [fig_save_path figname '_PSRfbpaper_final.pdf'], '-dpdf', '-r300');
+print(f, [fig_save_path figname '_PSRfbpaper_final.png'], '-dpng', '-r300');
