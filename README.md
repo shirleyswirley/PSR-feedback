@@ -1,7 +1,7 @@
 # PSR (particle size remineralization) feedback
 
 The code in this repository reproduces figures and tables in the following paper:
-<br>Leung, S., Weber, T., Cram, J. A., & Deutsch, C. Variable phytoplankton size distributions reduce the sensitivity of global export flux to climate change. <i>Submitted to Biogeosciences.</i>
+<br>Leung, S., Weber, T., Cram, J. A., & Deutsch, C. Variable particle size distributions reduce the sensitivity of global export flux to climate change. <i>Submitted to Biogeosciences.</i>
 
 Please cite the above paper and the code itself (here: https://doi.org/10.5281/zenodo.3785725) if you use any of it.
 
