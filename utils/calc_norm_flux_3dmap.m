@@ -1,8 +1,8 @@
 function [norm_flux_map, z] = calc_norm_flux_3dmap(lon,lat,beta_map,beta_name,var_des)
 
 % 1.) Constants from DeVries et al., 2014 mostly table 1
-z_surf = 0:10:100; % [m]
-z_deep = 250:250:1000; % [m]
+z_surf = 0:25:1000; % [m]
+z_deep = 1100:100:3000; % [m]
 z = [z_surf z_deep]; % water column depth range from bottom of euphotic zone to bottom of ocean
 c_w = 2.2E5; % coeff in particle sinking rate equation as a fxn of D
 c_r = 0.03; % degradation rate of sinking particles
